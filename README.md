@@ -16,6 +16,11 @@ git push -u github main
 ## Instructions
 What is inside, how to work with them, etc
 
+1. Please run the environment setup file:
+```bash
+./env_setup.sh
+```
+
 ***
 
 
