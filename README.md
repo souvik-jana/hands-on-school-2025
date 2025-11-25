@@ -24,7 +24,7 @@ If you have not installed `git-lfs`, please install it from here: [git-lfs.com](
 After which, one may need to set it up by running `git lfs install`.
 
 #### Downloading the large files
-To obtain all the files stored in [`lvk_skymaps_samples`](./lvk_skymaps_samples), please do the following:
+To obtain all the files stored in [`lvk_skyloc_samples`](./lvk_skyloc_samples), please do the following:
 ```bash
 git lfs pull
 ```
