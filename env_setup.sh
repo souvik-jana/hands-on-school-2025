@@ -14,6 +14,8 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 TEST=false
 VERBOSE=false
 CONDA_FLAGS=""
+INC_GWTC4=false
+RESTART=false
 
 help_msg=$(cat <<EOF
 This script will setup the Conda environment for the workshop,
@@ -21,38 +23,78 @@ and download the necessary data.
 
 Usage: ${0} [options]
 
-  -h,   
+  -h,
         Display this help message.
-  -t,   
+  -t,
         Test mode, not installing/downloading anything.
-  -v,   
+  -v,
         Verbose mode, run while printing every command being executing.
+  -a,
+        Include skymaps from GWTC4.0, which will take up an extra 250+MB of storage.
+  -c,
+        Clean all previous attempts, including Conda environment and downloaded data.
 EOF
 )
 
-while getopts "tvh" opt; do
+while getopts "tvach" opt; do
   case "$opt" in
-    t)  
+    t)
         TEST=true
         CONDA_FLAGS+="-d "
+        WGET_FLAGS+="--spider "
         echo "Running in test mode"
         ;;
-    v)  
+    v)
         verbose=true
         set -x
         ;;
-    h)  
+    a)
+        INC_GWTC4=true
+        echo "Will include GWTC4.0 data in downloads"
+        ;;
+    c)
+        RESTART=true
+        echo "Cleaning all previous attempts to restart"
+        ;;
+    h)
         echo "${help_msg}"
         exit 0
+        ;;
+    \?)
+        echo "Received an illegal option, exiting..."
+        echo -e "Here are the usages of this script: \n"
+        echo "${help_msg}"
+        exit 1
         ;;
   esac
 done
 
-shift $((OPTIND-1))
+shift $()
+
+# Cleaning mode
+if ${RESTART}
+then
+    echo "Removing last creation and download attempts"
+    echo "Will begin in 5s"
+    sleep 5
+    # Will proceed on removing even if some of them failed
+    # Turn on verbose mode regardless
+    set +e -x
+    echo "Removing Conda environment"
+    conda remove --name gw-school-2025
+
+    echo "Removing previously downloaded data"
+    cd ./lvk_skyloc_samples
+    rm GWTC???_skymaps.tar.gz
+    # Here, we remove dir by names in case there are other files with similar names.
+    rm -r GWTC2p1_skymaps
+    rm -r GWTC3p0_skymaps
+    rm -r GWTC4p0_skymaps
+fi
 
 # Step 1. Create the Conda environment
 echo "Creating the Conda environment"
-# conda create -n gw-school-2025 -c conda-forge --solver=libmamba ${CONDA_FLAGS} python=3.11 numpy matplotlib astropy lalsimulation lalinspiral h5py pesummary 
+# conda create -n gw-school-2025 -c conda-forge --solver=libmamba ${CONDA_FLAGS} python=3.11 numpy matplotlib astropy lalsimulation lalinspiral h5py pesummary
 # conda activate gw-school-2025
 
 # Step 2. Download LIGO skymaps
@@ -63,20 +105,71 @@ skymaps_GWTC3p0="https://zenodo.org/records/5546663/files/skymaps.tar.gz"
 GWTC4p0_file="GWTC4p0_skymaps.tar.gz"
 skymaps_GWTC4p0="https://zenodo.org/records/16053484/files/IGWN-GWTC4p0-0f954158d_720-Archived_Skymaps.tar.gz"
 
+command -v wget > /dev/null 2>&1
+HAS_WGET=$?
+command -v curl > /dev/null 2>&1
+HAS_CURL=$?
+
 echo "Downloading skymap data"
 cd ./lvk_skyloc_samples
-which wget
-if command -v wget > /dev/null 2>&1
+if [ ${HAS_WGET} = 0 ]
 then
-    mkdir -p GWTC2p1_skymaps
-    wget -O ${GWTC2p1_file} ${skymaps_GWTC2p1}
-    tar -xvzf ${GWTC2p1_file} -C GWTC2p1_skymaps
-    mkdir -p GWTC3p0_skymaps
-    wget -O ${GWTC3p0_file} ${skymaps_GWTC3p0}
-    tar -xvzf ${GWTC3p0_file} -C GWTC3p0_skymaps
-    mkdir -p GWTC4p0_skymaps
-    wget -O ${GWTC4p0_file} ${skymaps_GWTC4p0}
-    tar -xvzf ${GWTC4p0_file} -C GWTC4p0_skymaps
-else
+    wget ${WGET_FLAGS} -O ${GWTC2p1_file} ${skymaps_GWTC2p1} &
+    pid1=$!
+    wget ${WGET_FLAGS} -O ${GWTC3p0_file} ${skymaps_GWTC3p0} &
+    pid2=$!
+    if ${INC_GWTC4}
+    then
+        wget ${WGET_FLAGS} -O ${GWTC4p0_file} ${skymaps_GWTC4p0} &
+        pid3=$!
+        wait $pid1 $pid2 $pid3
+    else
+        wait $pid1 $pid2
+    fi
+elif ! ${TEST} && [ ${HAS_CURL} = 0 ]
+then
     echo "wget not found, try using cURL instead."
+    curl -o ${GWTC2p1_file} ${skymaps_GWTC2p1} &
+    pid1=$!
+    curl -o ${GWTC3p0_file} ${skymaps_GWTC3p0} &
+    pid2=$!
+    if ${INC_GWTC4}
+    then
+        curl -o ${GWTC4p0_file} ${skymaps_GWTC4p0} &
+        pid3=$!
+        wait $pid1 $pid2 $pid3
+    else
+        wait $pid1 $pid2
+    fi
+else
+    echo "Neither wget nor cURL is found. Exiting..."
+    exit 1
 fi
+
+if ${TEST}
+then
+    echo "Running in test mode, skip file processing"
+else
+    echo "Skymap downloads completes, uncompressing them."
+    mkdir -p GWTC2p1_skymaps
+    tar -xvzf ${GWTC2p1_file} -C GWTC2p1_skymaps
+    # No need to relocate files
+    mkdir -p GWTC3p0_skymaps
+    tar -xvzf ${GWTC3p0_file} -C GWTC3p0_skymaps
+    mv GWTC3p0_skymaps/skymaps/* GWTC3p0_skymaps
+    rmdir GWTC3p0_skymaps/skymaps/
+
+    if ${INC_GWTC4}
+    then
+        mkdir -p GWTC4p0_skymaps
+        tar -xvzf ${GWTC4p0_file} -C GWTC4p0_skymaps
+        mv GWTC4p0_skymaps/parameter_estimation/skymaps/* GWTC4p0_skymaps
+        rm -r GWTC4p0_skymaps/parameter_estimation
+    fi
+
+    echo "Removing intermediate tar.gz files"
+    rm *tar.gz
+fi
+
+echo "The total size of the downloaded data:"
+du -sh --total GWTC*
