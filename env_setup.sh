@@ -175,7 +175,7 @@ cd ./lvk_skyloc_samples
 if [ ${HAS_WGET} = 0 ]
 then
     download="wget ${WGET_FLAGS} -O"
-elif ! ${TEST} && [ ${HAS_CURL} = 0 ]
+elif [ ${HAS_CURL} = 0 ] && ! ${TEST}
 then
     echo "wget not found, will try to use cURL instead."
     download="curl -o"
@@ -232,7 +232,7 @@ else
     cd ${REPO_DIR}
 fi
 
-if ${POSTERIOR}
+if ${POSTERIOR} && ! ${TEST}
 then
     cd ${REPO_DIR}
     echo "Downloading posterior samples of all catalogues from Zenodo."
@@ -262,6 +262,6 @@ then
     wait $pid1 $pid2
 fi
 
-cd ${REPO_DIR}
 echo "All done, leaving..."
+cd ${REPO_DIR}
 exit 0
