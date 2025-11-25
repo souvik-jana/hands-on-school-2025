@@ -35,6 +35,8 @@ Usage: ${0} [options]
 EOF
 )
 
+OPT_MSG=""
+
 # Parsing user options
 while getopts "tvach" opt; do
   case "$opt" in
@@ -42,27 +44,28 @@ while getopts "tvach" opt; do
         TEST=true
         CONDA_FLAGS+="-d "
         WGET_FLAGS+="--spider "
-        echo "Running in test mode"
+        OPT_MSG+=$'     -t: Running in test mode\n'
         ;;
     v)
-        verbose=true
+        VERBOSE=true
         set -x
+        OPT_MSG+=$'     -v: Running in verbose mode\n'
         ;;
     a)
         INC_GWTC4=true
-        echo "Will include GWTC4.0 data in downloads"
+        OPT_MSG+=$'     -a: Downloading all data, including GWTC-4\n'
         ;;
     c)
         RESTART=true
-        echo "Cleaning all previous attempts to restart"
+        echo "* Cleaning all previous attempts to restart"
         ;;
     h)
         echo "${USAGE}"
         exit 0
         ;;
     \?)
-        echo "Received an illegal option, exiting..."
-        echo -e "Here are the usages of this script: \n"
+        echo "* Received an illegal option, exiting..."
+        echo -e "* Here are the usages of this script: \n"
         echo "${USAGE}"
         exit 1
         ;;
@@ -93,6 +96,41 @@ then
     rm -r GWTC4p0_skymaps
     exit 0
 fi
+
+if [ -z "${OPT_MSG}" ];
+then
+    MSG="Running with default settings."
+else
+    MSG=$(cat <<EOF
+Here are your specified options:
+${OPT_MSG}
+EOF
+)
+fi
+
+cat <<EOF
+##############################################################
+###         Welcome to the 2025 GW Hands-On School         ###
+##############################################################
+    
+    This setup may take awhile...
+    
+    While you are waiting, perhaps you may want to go over 
+    the program of the school:
+    -> https://gw.phy.cuhk.edu.hk/gw-hands-on-school-2025/
+
+    If you would like to stop at any point, press:
+          Ctrl+z 
+    to suspend it, then run:
+          kill %1
+    to kill this job in background.
+
+    ${MSG}
+
+--------------------------------------------------------------
+  
+EOF
+sleep 2
 
 # Step 1. Create the Conda environment
 echo "Creating the Conda environment"
@@ -128,14 +166,20 @@ fi
 
 ${download} ${GWTC2p1_file} ${skymaps_GWTC2p1} &
 pid1=$!
+sleep 1
 ${download} ${GWTC3p0_file} ${skymaps_GWTC3p0} &
 pid2=$!
+sleep 1
 if ${INC_GWTC4}
 then
     ${download} ${GWTC4p0_file} ${skymaps_GWTC4p0} &
     pid3=$!
+    echo "The PIDs of the downloads are:"
+    echo $pid1 $pid2 $pid3
     wait $pid1 $pid2 $pid3
 else
+    echo "The PIDs of the downloads are:"
+    echo $pid1 $pid2
     wait $pid1 $pid2
 fi
 
@@ -166,3 +210,6 @@ else
     echo "The total size of the downloaded data:"
     du -sh --total GWTC*
 fi
+
+echo "All done, leaving..."
+exit 0
