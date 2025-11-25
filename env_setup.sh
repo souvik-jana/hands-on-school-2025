@@ -5,17 +5,6 @@ set -e
 
 PWD=$(pwd)
 
-# The following getopt example obtained from:
-# https://stackoverflow.com/a/14203146
-# A POSIX variable
-OPTIND=1         # Reset in case getopts has been used previously in the shell.
-
-TEST=false
-VERBOSE=false
-CONDA_FLAGS=""
-INC_GWTC4=false
-RESTART=false
-
 USAGE=$(cat <<EOF
 This script will setup the Conda environment for the workshop,
 and download the necessary data.
@@ -35,6 +24,16 @@ Usage: ${0} [options]
 EOF
 )
 
+# The following getopt example obtained from:
+# https://stackoverflow.com/a/14203146
+# A POSIX variable
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+TEST=false
+VERBOSE=false
+CONDA_FLAGS=""
+INC_GWTC4=false
+CLEAN=false
 OPT_MSG=""
 
 # Parsing user options
@@ -56,7 +55,7 @@ while getopts "tvach" opt; do
         OPT_MSG+=$'     -a: Downloading all data, including GWTC-4\n'
         ;;
     c)
-        RESTART=true
+        CLEAN=true
         echo "* Cleaning all previous attempts to restart"
         ;;
     h)
@@ -75,7 +74,7 @@ done
 shift $((OPTIND-1))
 
 # Cleaning mode
-if ${RESTART}
+if ${CLEAN}
 then
     echo "Removing last creation and download attempts"
     echo "Will begin in 5s"
