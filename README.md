@@ -33,11 +33,11 @@ git lfs pull
 What is inside, how to work with them, etc
 
 1. Please run the environment setup file:
-```bash
-bash env_setup.sh
-# or
-./env_setup.sh
-```
+   ```bash
+   bash env_setup.sh
+   # or
+   ./env_setup.sh
+   ```
 
 The setup script has the following options:
 * `-t`, test mode, perform a dry run without installing/downloading anything.
@@ -73,4 +73,4 @@ If you would like to work and collaborate on your own fork, here are two approac
 Paul Martens, Laura Uronen, Charmaine Wong, Samson Leong
 
 ## License
-Think about this.
+We will have one later...
