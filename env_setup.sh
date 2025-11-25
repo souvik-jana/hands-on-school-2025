@@ -3,7 +3,7 @@
 # Stop execution as soon as any error is raised.
 set -e
 
-PWD=$(pwd)
+REPO_DIR=$(pwd)
 
 USAGE=$(cat <<EOF
 This script will setup the Conda environment for the workshop,
@@ -19,6 +19,8 @@ Usage: ${0} [options]
         Verbose mode, run while printing every command being executing.
   -a,
         Include skymaps from GWTC4.0, which will take up an extra 250+MB of storage.
+  -p,
+        Download all posterior samples from all catalogues as well, highly not recommended.
   -c,
         Clean all previous attempts, including Conda environment and downloaded data.
 EOF
@@ -33,11 +35,12 @@ TEST=false
 VERBOSE=false
 CONDA_FLAGS=""
 INC_GWTC4=false
+POSTERIOR=false
 CLEAN=false
 OPT_MSG=""
 
 # Parsing user options
-while getopts "tvach" opt; do
+while getopts "tvapch" opt; do
   case "$opt" in
     t)
         TEST=true
@@ -53,6 +56,11 @@ while getopts "tvach" opt; do
     a)
         INC_GWTC4=true
         OPT_MSG+=$'     -a: Downloading all data, including GWTC-4\n'
+        ;;
+    p)
+        POSTERIOR=true
+        OPT_MSG+=$'     -p: Download all posterior samples from Zenodo as well\n'
+        OPT_MSG+=$'         (Highly not recommended!)\n'
         ;;
     c)
         CLEAN=true
@@ -111,15 +119,15 @@ cat <<EOF
 ##############################################################
 ###         Welcome to the 2025 GW Hands-On School         ###
 ##############################################################
-    
+
     This setup may take awhile...
-    
-    While you are waiting, perhaps you may want to go over 
+
+    While you are waiting, perhaps you may want to go over
     the program of the school:
     -> https://gw.phy.cuhk.edu.hk/gw-hands-on-school-2025/
 
     If you would like to stop at any point, press:
-          Ctrl+z 
+          Ctrl+z
     to suspend it, then run:
           kill %1
     to kill this job in background.
@@ -127,7 +135,7 @@ cat <<EOF
     ${MSG}
 
 --------------------------------------------------------------
-  
+
 EOF
 
 # Check whether git-lfs has been installed
@@ -221,7 +229,39 @@ else
 
     echo "The total size of the downloaded data:"
     du -sh --total GWTC*
+    cd ${REPO_DIR}
 fi
 
+if ${POSTERIOR}
+then
+    cd ${REPO_DIR}
+    echo "Downloading posterior samples of all catalogues from Zenodo."
+    mkdir -p LVK_PE_samples && cd LVK_PE_samples
+
+    # GWTC2.1
+    mkdir GWTC2p1_samples && cd GWTC2p1_samples
+    zenodo_get https://zenodo.org/records/6513631 -g "*_cosmo.h5" &
+    pid1=$!
+    cd ..
+
+    # GWTC3.0
+    mkdir GWTC3p0_samples && cd GWTC3p0_samples
+    zenodo_get https://zenodo.org/records/8177023 -g "*_cosmo.h5" &
+    pid2=$!
+    cd ..
+
+    if ${INC_GWTC4}
+    then
+        # GWTC4.0
+        mkdir GWTC4p0_samples && cd GWTC4p0_samples
+        zenodo_get https://zenodo.org/records/17014085 -g "*.hdf5" &
+        pid3=$!
+        cd ..
+        wait $pid3
+    fi
+    wait $pid1 $pid2
+fi
+
+cd ${REPO_DIR}
 echo "All done, leaving..."
 exit 0
