@@ -1,16 +1,31 @@
 # GW Hands-On School 2025
 
-## How to work with this repository
+## Getting Started
 
-Every group should have a person to fork this main repository.
-Then work on it as a group.
-
-If fork does not work, try to first clone it and push it to GitHub.
+To obtain this repository on your laptop, simply do 
 ```bash
 git clone git@git.ligo.org:pauljl.martens/hands-on-school-2025.git
+# or
+git clone https://git.ligo.org/pauljl.martens/hands-on-school-2025.git
+```
+then everything should be in:
+```bash
 cd hands-on-school-2025.git
-git remote add github <YOUR-GITHUB-REPO-URL>
-git push -u github main
+```
+
+### Git-LFS
+This repository contains some large binary files, which are stored using `git-lfs`. 
+
+#### Setting up Git-LFS
+*(For those who have git-lfs installed and setup, feel free to skip this)*
+If you have not installed `git-lfs`, please install it from here: [git-lfs.com](https://git-lfs.com).
+
+After which, one may need to set it up by running `git lfs install`.
+
+#### Downloading the large files
+To obtain all the files stored in [`lvk_skymaps_data`](./lvk_skymaps_data), please do the following:
+```bash
+git lfs pull
 ```
 
 ## Instructions
@@ -37,6 +52,19 @@ this will be running in both test and verbose modes.
 In addition, there are two other special modes:
 * `-h`, simply display the help message with the list of options and exits.
 * `-c`, this will clean up all previous attempts, including Conda environment and downloaded data. This is useful for a fresh start.
+
+## Fork and GitHub
+If you would like to work and collaborate on your own fork, here are two approaches:
+1. Simply fork this GitLab repository, and clone the fork to your local machine instead.
+
+2. If GitHub is easier to work with, one may first clone this repository first.
+  * Then create a blank repository on GitHub, and obtain the URL to it.
+  * Inside the local git repository, run the following:
+    ```bash
+    git remote add github <YOUR-GITHUB-REPO-URL>
+    git push -u github main
+    ```
+  * Then a copy of this repository will be hosting in your own GitHub account.
 
 ***
 
