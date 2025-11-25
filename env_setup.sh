@@ -130,7 +130,18 @@ cat <<EOF
 --------------------------------------------------------------
   
 EOF
-sleep 2
+
+# Check whether git-lfs has been installed
+if git lfs version > /dev/null 2>&1
+then
+    echo "    You have installed git-lfs:"
+    echo "    -> $(git lfs version)"
+else
+    echo "    git-lfs has not been installed yet!"
+    echo "    Please consider install it here: https://git-lfs.com"
+fi
+
+sleep 1
 
 # Step 1. Create the Conda environment
 echo "Creating the Conda environment"
