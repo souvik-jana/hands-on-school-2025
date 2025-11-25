@@ -17,7 +17,7 @@ cd hands-on-school-2025.git
 This repository contains some large binary files, which are stored using `git-lfs`. 
 
 #### Setting up Git-LFS
-*(For those who have git-lfs installed and setup, feel free to skip this)*
+> *For those who have git-lfs installed and setup, feel free to skip this*
 If you have not installed `git-lfs`, please install it from here: [git-lfs.com](https://git-lfs.com).
 
 After which, one may need to set it up by running `git lfs install`.
@@ -67,7 +67,6 @@ If you would like to work and collaborate on your own fork, here are two approac
   * Then a copy of this repository will be hosting in your own GitHub account.
 
 ***
-
 
 ## Authors 
 Paul Martens, Laura Uronen, Charmaine Wong, Samson Leong
