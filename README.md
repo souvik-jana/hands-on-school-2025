@@ -18,12 +18,13 @@ This repository contains some large binary files, which are stored using `git-lf
 
 #### Setting up Git-LFS
 > *For those who have git-lfs installed and setup, feel free to skip this*
+
 If you have not installed `git-lfs`, please install it from here: [git-lfs.com](https://git-lfs.com).
 
 After which, one may need to set it up by running `git lfs install`.
 
 #### Downloading the large files
-To obtain all the files stored in [`lvk_skymaps_data`](./lvk_skymaps_data), please do the following:
+To obtain all the files stored in [`lvk_skymaps_samples`](./lvk_skymaps_samples), please do the following:
 ```bash
 git lfs pull
 ```
