@@ -18,6 +18,8 @@ What is inside, how to work with them, etc
 
 1. Please run the environment setup file:
 ```bash
+bash env_setup.sh
+# or
 ./env_setup.sh
 ```
 
