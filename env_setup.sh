@@ -10,14 +10,13 @@ PWD=$(pwd)
 # A POSIX variable
 OPTIND=1         # Reset in case getopts has been used previously in the shell.
 
-# Parsing user options
 TEST=false
 VERBOSE=false
 CONDA_FLAGS=""
 INC_GWTC4=false
 RESTART=false
 
-help_msg=$(cat <<EOF
+USAGE=$(cat <<EOF
 This script will setup the Conda environment for the workshop,
 and download the necessary data.
 
@@ -36,6 +35,7 @@ Usage: ${0} [options]
 EOF
 )
 
+# Parsing user options
 while getopts "tvach" opt; do
   case "$opt" in
     t)
@@ -57,31 +57,32 @@ while getopts "tvach" opt; do
         echo "Cleaning all previous attempts to restart"
         ;;
     h)
-        echo "${help_msg}"
+        echo "${USAGE}"
         exit 0
         ;;
     \?)
         echo "Received an illegal option, exiting..."
         echo -e "Here are the usages of this script: \n"
-        echo "${help_msg}"
+        echo "${USAGE}"
         exit 1
         ;;
   esac
 done
 
-shift $()
+shift $((OPTIND-1))
 
 # Cleaning mode
 if ${RESTART}
 then
     echo "Removing last creation and download attempts"
     echo "Will begin in 5s"
+    # Buffer time for regret...
     sleep 5
     # Will proceed on removing even if some of them failed
     # Turn on verbose mode regardless
     set +e -x
     echo "Removing Conda environment"
-    conda remove --name gw-school-2025
+    conda remove --name gw-school-2025 --all
 
     echo "Removing previously downloaded data"
     cd ./lvk_skyloc_samples
@@ -90,12 +91,13 @@ then
     rm -r GWTC2p1_skymaps
     rm -r GWTC3p0_skymaps
     rm -r GWTC4p0_skymaps
+    exit 0
 fi
 
 # Step 1. Create the Conda environment
 echo "Creating the Conda environment"
-# conda create -n gw-school-2025 -c conda-forge --solver=libmamba ${CONDA_FLAGS} python=3.11 numpy matplotlib astropy lalsimulation lalinspiral h5py pesummary
-# conda activate gw-school-2025
+conda create -n gw-school-2025 -c conda-forge --solver=libmamba ${CONDA_FLAGS} python=3.11 numpy matplotlib astropy lalsimulation lalinspiral h5py pesummary
+conda activate gw-school-2025
 
 # Step 2. Download LIGO skymaps
 GWTC2p1_file="GWTC2p1_skymaps.tar.gz"
@@ -114,36 +116,27 @@ echo "Downloading skymap data"
 cd ./lvk_skyloc_samples
 if [ ${HAS_WGET} = 0 ]
 then
-    wget ${WGET_FLAGS} -O ${GWTC2p1_file} ${skymaps_GWTC2p1} &
-    pid1=$!
-    wget ${WGET_FLAGS} -O ${GWTC3p0_file} ${skymaps_GWTC3p0} &
-    pid2=$!
-    if ${INC_GWTC4}
-    then
-        wget ${WGET_FLAGS} -O ${GWTC4p0_file} ${skymaps_GWTC4p0} &
-        pid3=$!
-        wait $pid1 $pid2 $pid3
-    else
-        wait $pid1 $pid2
-    fi
+    download="wget ${WGET_FLAGS} -O"
 elif ! ${TEST} && [ ${HAS_CURL} = 0 ]
 then
-    echo "wget not found, try using cURL instead."
-    curl -o ${GWTC2p1_file} ${skymaps_GWTC2p1} &
-    pid1=$!
-    curl -o ${GWTC3p0_file} ${skymaps_GWTC3p0} &
-    pid2=$!
-    if ${INC_GWTC4}
-    then
-        curl -o ${GWTC4p0_file} ${skymaps_GWTC4p0} &
-        pid3=$!
-        wait $pid1 $pid2 $pid3
-    else
-        wait $pid1 $pid2
-    fi
+    echo "wget not found, will try to use cURL instead."
+    download="curl -o"
 else
     echo "Neither wget nor cURL is found. Exiting..."
     exit 1
+fi
+
+${download} ${GWTC2p1_file} ${skymaps_GWTC2p1} &
+pid1=$!
+${download} ${GWTC3p0_file} ${skymaps_GWTC3p0} &
+pid2=$!
+if ${INC_GWTC4}
+then
+    ${download} ${GWTC4p0_file} ${skymaps_GWTC4p0} &
+    pid3=$!
+    wait $pid1 $pid2 $pid3
+else
+    wait $pid1 $pid2
 fi
 
 if ${TEST}
@@ -169,7 +162,7 @@ else
 
     echo "Removing intermediate tar.gz files"
     rm *tar.gz
-fi
 
-echo "The total size of the downloaded data:"
-du -sh --total GWTC*
+    echo "The total size of the downloaded data:"
+    du -sh --total GWTC*
+fi
