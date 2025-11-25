@@ -43,6 +43,7 @@ The setup script has the following options:
 * `-t`, test mode, perform a dry run without installing/downloading anything.
 * `-v`, verbose mode, run while printing every command being executing.
 * `-a`, include skymaps from GWTC4.0 in downloads, which will take up an extra 250+MB of storage. By default, only skymaps from GWTC2.1 and GWTC3.0 will be downloaded.
+* `-p`, include all posterior samples in downloads also, highly not recommended. This option will respect `-a`.
 
 These options can be used in conjunction, *e.g.*
 ```
