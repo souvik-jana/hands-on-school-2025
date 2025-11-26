@@ -154,9 +154,9 @@ sleep 1
 echo "Creating the Conda environment"
 # First source conda to initialise it
 source $(conda info --base)/etc/profile.d/conda.sh
-# conda create -n gw-school-2025 -c conda-forge --solver=libmamba --yes ${CONDA_FLAGS} python=3.11 \
-#     "numpy<=1.24" matplotlib ipython h5py zenodo_get astropy \
-#     lalsimulation lalinspiral pycbc ligo.skymap "pesummary>=1.3.2"
+conda create -n gw-school-2025 -c conda-forge --solver=libmamba --yes ${CONDA_FLAGS} python=3.11 \
+    "numpy<=1.24" matplotlib ipython h5py zenodo_get astropy \
+    lalsimulation lalinspiral pycbc ligo.skymap "pesummary>=1.3.2"
 conda activate gw-school-2025
 
 # Step 2. Download LIGO skymaps
@@ -218,8 +218,8 @@ else
     # No need to relocate files
     mkdir -p GWTC3p0_skymaps
     tar -xvzf ${GWTC3p0_file} -C GWTC3p0_skymaps
-    mv GWTC3p0_skymaps/skymaps/* GWTC3p0_skymaps
-    rmdir GWTC3p0_skymaps/skymaps/
+    mv GWTC3p0_skymaps/IGWN-GWTC3p0-v2-PESkyLocalizations/* GWTC3p0_skymaps
+    rmdir GWTC3p0_skymaps/IGWN-GWTC3p0-v2-PESkyLocalizations/
 
     if ${INC_GWTC4}
     then
