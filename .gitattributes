@@ -126,3 +126,4 @@ lvk_skyloc_samples/skymaps/IGWN-GWTC3p0-v1-GW200129_065458_PEDataRelease_cosmo_r
 lvk_skyloc_samples/skymaps/IGWN-GWTC3p0-v1-GW191204_171526_PEDataRelease_cosmo_reweight_C01:Mixed.fits filter=lfs diff=lfs merge=lfs -text
 lvk_skyloc_samples/skymaps/IGWN-GWTC3p0-v1-GW191216_213338_PEDataRelease_cosmo_reweight_C01:SEOBNRv4PHM.fits filter=lfs diff=lfs merge=lfs -text
 lvk_skyloc_samples/skymaps/IGWN-GWTC3p0-v1-GW200112_155838_PEDataRelease_cosmo_reweight_C01:IMRPhenomXPHM.fits filter=lfs diff=lfs merge=lfs -text
+*.tar.gz filter=lfs diff=lfs merge=lfs -text
