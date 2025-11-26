@@ -154,9 +154,9 @@ sleep 1
 echo "Creating the Conda environment"
 # First source conda to initialise it
 source $(conda info --base)/etc/profile.d/conda.sh
-conda create -n gw-school-2025 -c conda-forge --solver=libmamba --yes ${CONDA_FLAGS} python=3.11 \
-    "numpy<=1.24" matplotlib ipython h5py zenodo_get astropy \
-    lalsimulation lalinspiral pycbc ligo.skymap "pesummary>=1.3.2"
+# conda create -n gw-school-2025 -c conda-forge --solver=libmamba --yes ${CONDA_FLAGS} python=3.11 \
+#     "numpy<=1.24" matplotlib ipython h5py zenodo_get astropy \
+#     lalsimulation lalinspiral pycbc ligo.skymap "pesummary>=1.3.2"
 conda activate gw-school-2025
 
 # Step 2. Download LIGO skymaps
@@ -189,15 +189,15 @@ else
     exit 1
 fi
 
-${download} ${GWTC2p1_file} ${skymaps_GWTC2p1} &
+eval "${download} ${GWTC2p1_file} ${skymaps_GWTC2p1} &"
 pid1=$!
 sleep 1
-${download} ${GWTC3p0_file} ${skymaps_GWTC3p0} &
+eval "${download} ${GWTC3p0_file} ${skymaps_GWTC3p0} &"
 pid2=$!
 sleep 1
 if ${INC_GWTC4}
 then
-    ${download} ${GWTC4p0_file} ${skymaps_GWTC4p0} &
+    eval "${download} ${GWTC4p0_file} ${skymaps_GWTC4p0} &"
     pid3=$!
     echo "The PIDs of the downloads are:"
     echo $pid1 $pid2 $pid3
