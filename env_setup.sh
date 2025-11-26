@@ -158,12 +158,15 @@ conda create -n gw-school-2025 -c conda-forge --solver=libmamba --yes ${CONDA_FL
 conda activate gw-school-2025
 
 # Step 2. Download LIGO skymaps
+GWTC2p1_Zenodo="https://zenodo.org/records/6513631"
+GWTC3p0_Zenodo="https://zenodo.org/records/8177023"
+GWTC4p0_Zenodo="https://zenodo.org/records/17014085"
+skymaps_GWTC2p1="${GWTC2p1_Zenodo}/files/IGWN-GWTC2p1-v2-PESkyMaps.tar.gz"
+skymaps_GWTC3p0="${GWTC3p0_Zenodo}/files/skymaps.tar.gz"
+skymaps_GWTC4p0="${GWTC4p0_Zenodo}/files/IGWN-GWTC4p0-0f954158d_720-Archived_Skymaps.tar.gz"
 GWTC2p1_file="GWTC2p1_skymaps.tar.gz"
-skymaps_GWTC2p1="https://zenodo.org/records/6513631/files/IGWN-GWTC2p1-v2-PESkyMaps.tar.gz"
-GWTC3p0_file="GWTC3p0_skymaps.tar.gz"
-skymaps_GWTC3p0="https://zenodo.org/records/5546663/files/skymaps.tar.gz"
 GWTC4p0_file="GWTC4p0_skymaps.tar.gz"
-skymaps_GWTC4p0="https://zenodo.org/records/16053484/files/IGWN-GWTC4p0-0f954158d_720-Archived_Skymaps.tar.gz"
+GWTC3p0_file="GWTC3p0_skymaps.tar.gz"
 
 command -v wget > /dev/null 2>&1
 HAS_WGET=$?
@@ -240,13 +243,13 @@ then
 
     # GWTC2.1
     mkdir GWTC2p1_samples && cd GWTC2p1_samples
-    zenodo_get https://zenodo.org/records/6513631 -g "*_cosmo.h5" &
+    zenodo_get ${GWTC2p1_Zenodo} -g "*_cosmo.h5" &
     pid1=$!
     cd ..
 
     # GWTC3.0
     mkdir GWTC3p0_samples && cd GWTC3p0_samples
-    zenodo_get https://zenodo.org/records/8177023 -g "*_cosmo.h5" &
+    zenodo_get ${GWTC3p0_Zenodo} -g "*_cosmo.h5" &
     pid2=$!
     cd ..
 
@@ -254,7 +257,7 @@ then
     then
         # GWTC4.0
         mkdir GWTC4p0_samples && cd GWTC4p0_samples
-        zenodo_get https://zenodo.org/records/17014085 -g "*.hdf5" &
+        zenodo_get ${GWTC4p0_Zenodo} -g "*.hdf5" &
         pid3=$!
         cd ..
         wait $pid3
