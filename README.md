@@ -21,12 +21,21 @@ This repository contains some large binary files, which are stored using `git-lf
 
 If you have not installed `git-lfs`, please install it from here: [git-lfs.com](https://git-lfs.com).
 
-After which, one may need to set it up by running `git lfs install`.
+After which, one may need to set it up by running `git lfs install  --skip-smudge`.
+> The `--skip-smudge` option ensures that no files under LFS control are
+downloaded automatically when cloning the repository or checking out new
+commits containing LFS controlled files. 
 
 #### Downloading the large files
-To obtain all the files stored in [`lvk_skyloc_samples`](./lvk_skyloc_samples), please do the following:
+To obtain all the files stored in [`LVK_skyloc_samples`](./LVK_skyloc_samples), please do the following:
 ```bash
 git lfs pull
+```
+To pull only a specific file:
+```bash
+git lfs pull -I <filepath>
+# Example:
+git lfs pull -I LVK_skyloc_samples/GWTC2p1_nocosmo_skyloc_samples.h5
 ```
 
 ## Instructions
@@ -39,6 +48,7 @@ What is inside, how to work with them, etc
    ./env_setup.sh
    ```
 
+### Options for setup
 The setup script has the following options:
 * `-t`, test mode, perform a dry run without installing/downloading anything.
 * `-v`, verbose mode, run while printing every command being executing.
@@ -54,6 +64,14 @@ this will be running in both test and verbose modes.
 In addition, there are two other special modes:
 * `-h`, simply display the help message with the list of options and exits.
 * `-c`, this will clean up all previous attempts, including Conda environment and downloaded data. This is useful for a fresh start.
+
+2. The `LVK_skyloc_samples`
+This directory contains both the sky location samples for all public catalogues, and the associated skymaps.
+
+The samples can be pulled with `git lfs`, and the skymaps should be downloaded during setup.
+
+3. The `LVK_PE_data`
+This is where the posterior files will be stored in if `-p` was called in the setup.
 
 ## Fork and GitHub
 If you would like to work and collaborate on your own fork, here are two approaches:

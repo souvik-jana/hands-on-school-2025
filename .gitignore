@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Python
 __pycache__/
 *.py[cod]
@@ -29,3 +30,6 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+=======
+LVK_skyloc_samples/GWTC???_skymaps/*
+>>>>>>> 52063a29cc6c3963993c5f9acae4bd9e39613488
