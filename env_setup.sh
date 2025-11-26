@@ -153,8 +153,8 @@ sleep 1
 # Step 1. Create the Conda environment
 echo "Creating the Conda environment"
 conda create -n gw-school-2025 -c conda-forge --solver=libmamba --yes ${CONDA_FLAGS} python=3.11 \
-    "numpy<=1.23" matplotlib ipython h5py zenodo_get astropy \
-    lalsimulation lalinspiral pycbc ligo.skymap "pesummary>=0.13.2"
+    "numpy<=1.24" matplotlib ipython h5py zenodo_get astropy \
+    lalsimulation lalinspiral pycbc ligo.skymap "pesummary>=1.3.2"
 conda activate gw-school-2025
 
 # Step 2. Download LIGO skymaps
