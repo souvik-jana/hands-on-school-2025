@@ -30,4 +30,4 @@ build/
 .DS_Store
 Thumbs.db
 
-LVK_skyloc_samples/GWTC???_skymaps/*
+#LVK_skyloc_samples/GWTC???_skymaps/*
