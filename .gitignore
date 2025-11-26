@@ -21,10 +21,10 @@ build/
 *.swo
 
 # Data files
-*.h5
-*.hdf5
-*.pkl
-*.pickle
+#*.h5
+#*.hdf5
+#*.pkl
+#*.pickle
 
 # OS
 .DS_Store
