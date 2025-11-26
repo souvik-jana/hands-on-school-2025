@@ -176,7 +176,7 @@ command -v curl > /dev/null 2>&1
 HAS_CURL=$?
 
 echo "Downloading skymap data"
-cd ./lvk_skyloc_samples
+cd ${REPO_DIR}/LVK_skyloc_samples
 if [ ${HAS_WGET} = 0 ]
 then
     download="wget ${WGET_FLAGS} -O"
@@ -239,9 +239,8 @@ fi
 
 if ${POSTERIOR} && ! ${TEST}
 then
-    cd ${REPO_DIR}
+    cd ${REPO_DIR}/LVK_PE_samples
     echo "Downloading posterior samples of all catalogues from Zenodo."
-    mkdir -p LVK_PE_samples && cd LVK_PE_samples
 
     # GWTC2.1
     mkdir GWTC2p1_samples && cd GWTC2p1_samples
